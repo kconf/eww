@@ -1,0 +1,48 @@
+#!/bin/sh
+
+wifi() {
+    wifi_icon=" "
+    
+    # Get the active wifi interface using networkctl
+    wifi_interface=$(networkctl list | grep -E "wlan|wifi|wlp" | grep -v "no-carrier" | awk '{print $2}' | head -n1)
+
+    if [ -n "$wifi_interface" ]; then
+        # Check if the interface is up and connected
+        interface_state=$(networkctl status "$wifi_interface" 2>/dev/null | grep "State:" | awk '{print $2}')
+        
+        if [ "$interface_state" = "routable" ] || [ "$interface_state" = "carrier" ]; then
+            # Get SSID and signal strength using iwctl
+            station_info=$(iwctl station "$wifi_interface" show 2>/dev/null)
+            wifi_ssid=$(echo "$station_info" | grep "Connected network" | awk '{print $3}')
+
+    if [ -n "$wifi_ssid" ]; then
+                # Get signal strength for the connected network
+                wifi_strength=$(iwctl station "$wifi_interface" get-networks 2>/dev/null | grep "^\s*>" | awk '{print $(NF-1)}' | sed 's/*$//')
+                
+                if [ -n "$wifi_strength" ]; then
+                    # Convert dBm to percentage (rough approximation)
+                    if [ "$wifi_strength" -ge -50 ]; then
+                        wifi_percent="100"
+                    elif [ "$wifi_strength" -ge -60 ]; then
+                        wifi_percent="75"
+                    elif [ "$wifi_strength" -ge -70 ]; then
+                        wifi_percent="50"
+                    else
+                        wifi_percent="25"
+                    fi
+                    echo "$wifi_icon $wifi_ssid ($wifi_percent%)"
+                else
+                    echo "$wifi_icon $wifi_ssid"
+                fi
+            else
+                echo "$wifi_icon Connected"
+            fi
+    else
+        echo "$wifi_icon Disconnected"
+        fi
+    else
+        echo "$wifi_icon No WiFi Interface"
+    fi
+}
+
+wifi

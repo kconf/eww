@@ -1,0 +1,67 @@
+(deflisten workspacesArray :initial "[]"
+  `./scripts/get_scroll_workspaces`)
+
+(defwidget workspaces [array]
+  (box :class "workspaces"
+       :orientation "h"
+       :space-evenly false
+       :halign "start"
+       :spacing 5
+
+     (for entry in array
+      (button :onclick `scrollmsg workspace "${entry.name}"`
+              :class "workspace ${entry.focused ? "focused" : ""}"
+           `${entry.name}`))))
+
+(deflisten window-title :initial "Desktop"
+  `./scripts/get_window_title`)
+
+(defwidget window-info []
+  (box :class "window-info"
+       :halign "center"
+       (label :class "window-title" 
+              :limit-width 60
+              :text "${window-title}")))
+
+(defpoll wifi-poll :interval "5s" "./scripts/get_wifi")
+
+(defwidget wifi []
+  (box :class "status-item wifi-item"
+       (label :text "${wifi-poll}")))
+
+(defpoll volume-poll :interval "1s" "./scripts/get_vol")
+
+(defwidget volume []
+  (box :class "status-item volume-item"
+       (label :text "${volume-poll}")))
+
+(defpoll time-poll :interval "1s" "date '+%H:%M:%S'")
+
+(defwidget time []
+  (box :class "status-item time-item"
+       (label :text "  ${time-poll}")))
+
+(defwidget status-bar []
+  (box :class "status-bar" 
+       :orientation "h" 
+       :space-evenly false
+       :halign "end"
+       :spacing 10
+    (wifi)
+    (volume)
+    (time)))
+
+(defwidget bar []
+  (centerbox :class "bar" 
+             :orientation "h"
+    (workspaces :array workspacesArray)
+    (window-info)
+    (status-bar)))
+
+(defwindow eww-bar
+  :monitor 0
+  :geometry (geometry :x "0%" :y "0%" :width "100%" :height "35px")
+  :stacking "fg"
+  :exclusive true
+  :windowtype "dock"
+  (bar))

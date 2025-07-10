@@ -1,0 +1,16 @@
+#!/bin/sh
+
+volume_icon=" "
+
+if command -v pamixer &>/dev/null; then
+    if [ true == $(pamixer --get-mute) ]; then
+        echo "$volume_icon 0%"
+        exit
+    else
+        volume=$(pamixer --get-volume)
+        echo "$volume_icon $volume%"
+    fi
+else
+    volume=$(amixer -D pulse sget Master | awk -F '[^0-9]+' '/Left:/{print $3}')
+    echo "$volume_icon $volume%"
+fi

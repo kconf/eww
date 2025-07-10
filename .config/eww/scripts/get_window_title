@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# Get focused window title
+get_focused_window() {
+    focused_window=$(scrollmsg -t get_tree | jq -r '.. | select(.focused? == true and .name? != null) | .name' | head -1)
+    if [ -n "$focused_window" ] && [ "$focused_window" != "null" ]; then
+        # Limit title length to prevent overflow
+        if [ ${#focused_window} -gt 50 ]; then
+            echo "${focused_window:0:47}..."
+        else
+            echo "$focused_window"
+        fi
+    else
+        echo "Desktop"
+    fi
+}
+
+get_focused_window
+
+# Monitor for window changes
+scrollmsg -t subscribe '["window", "workspace"]' --monitor | {
+    while read -r event; do
+        get_focused_window
+    done
+} 
