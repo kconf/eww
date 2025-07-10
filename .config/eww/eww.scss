@@ -1,7 +1,7 @@
 * {
   all: unset;
   font-family: "JetBrainsMono Nerd Font";
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
 }
 
@@ -13,21 +13,18 @@
 
 /* Workspaces Section */
 .workspaces {
-  background: #3c3836;
-  border-radius: 12px;
-  padding: 8px 12px;
-  margin: 6px 12px;
-  border: 1px solid #504945;
+  padding: 4px 8px;
+  margin: 2px 8px;
 }
 
 .workspace {
-  background: #282828;
+  background: #3c3836;
   color: #a89984;
-  border-radius: 8px;
-  padding: 8px 14px;
-  margin: 0 4px;
+  border-radius: 6px;
+  padding: 4px 10px;
+  margin: 0 3px;
   border: 1px solid #504945;
-  min-width: 32px;
+  min-width: 24px;
   font-weight: 600;
 }
 
@@ -46,33 +43,27 @@
 
 /* Window Info Section */
 .window-info {
-  background: #3c3836;
-  border-radius: 12px;
-  padding: 10px 24px;
-  margin: 6px 12px;
-  border: 1px solid #504945;
+  padding: 4px 16px;
+  margin: 2px 8px;
 }
 
 .window-title {
   color: #fe8019;
   font-weight: 600;
-  font-size: 13px;
+  font-size: 12px;
 }
 
 /* Status Bar Section */
 .status-bar {
-  background: #3c3836;
-  border-radius: 12px;
-  padding: 8px 16px;
-  margin: 6px 12px;
-  border: 1px solid #504945;
+  padding: 4px 8px;
+  margin: 2px 8px;
 }
 
 .status-item {
-  background: #282828;
-  border-radius: 8px;
-  padding: 8px 12px;
-  margin: 0 4px;
+  background: #3c3836;
+  border-radius: 6px;
+  padding: 4px 8px;
+  margin: 0 3px;
   border: 1px solid #504945;
 }
 

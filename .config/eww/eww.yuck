@@ -60,7 +60,7 @@
 
 (defwindow eww-bar
   :monitor 0
-  :geometry (geometry :x "0%" :y "0%" :width "100%" :height "35px")
+  :geometry (geometry :x "0%" :y "0%" :width "100%" :height "26px")
   :stacking "fg"
   :exclusive true
   :windowtype "dock"
