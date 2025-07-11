@@ -32,8 +32,9 @@
 (defpoll volume-poll :interval "1s" "./scripts/get_vol")
 
 (defwidget volume []
-  (box :class "status-item volume-item"
-       (label :text "${volume-poll}")))
+  (eventbox :onclick "pavucontrol &"
+    (box :class "status-item volume-item"
+         (label :text "${volume-poll}"))))
 
 (defpoll time-poll :interval "60s" "date '+%H:%M'")
 
