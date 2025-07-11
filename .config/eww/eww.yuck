@@ -8,10 +8,10 @@
        :halign "start"
        :spacing 5
 
-    (for entry in array
+     (for entry in array
       (button :onclick `scrollmsg workspace "${entry.name}"`
               :class "workspace ${entry.focused ? "focused" : ""}"
-        `${entry.name}`))))
+           `${entry.name}`))))
 
 (deflisten window-title :initial "Desktop"
   `./scripts/get_window_title`)
@@ -19,41 +19,50 @@
 (defwidget window-info []
   (box :class "window-info"
        :halign "center"
-    (label :class "window-title" 
-           :limit-width 60
-           :text "${window-title}")))
+       (label :class "window-title"
+              :limit-width 60
+              :text "${window-title}")))
 
 (defpoll wifi-poll :interval "5s" "./scripts/get_wifi")
 
 (defwidget wifi []
   (box :class "status-item wifi-item"
-    (label :text "${wifi-poll}")))
+       (label :text "${wifi-poll}")))
 
 (defpoll volume-poll :interval "1s" "./scripts/get_vol")
 
 (defwidget volume []
   (box :class "status-item volume-item"
-    (label :text "${volume-poll}")))
+       (label :text "${volume-poll}")))
 
-(defpoll time-poll :interval "1s" "date '+%H:%M:%S'")
+(defpoll time-poll :interval "60s" "date '+%H:%M'")
+
+(defvar calendar-show false)
 
 (defwidget time []
-  (box :class "status-item time-item"
-    (label :text "  ${time-poll}")))
+  (eventbox :onhover `eww update calendar-show=true`
+            :onhoverlost `eww update calendar-show=false`
+    (box :class "status-item time-item"
+         (label :text "  ${time-poll}"))))
+
+(defwidget calendar-popup []
+  (box :class "calendar-container"
+       :orientation "v"
+    (calendar :class "calendar-widget")))
 
 (defwidget status-bar []
-  (box :class "status-bar" 
-       :orientation "h" 
+  (box :class "status-bar"
+       :orientation "h"
        :space-evenly false
        :halign "end"
        :spacing 10
     (wifi)
     (volume)
     (time)
-    (systray :class "systray-item" :pack-direction "ltr")))
+    (systray :class "systray-item")))
 
 (defwidget bar []
-  (centerbox :class "bar" 
+  (centerbox :class "bar"
              :orientation "h"
     (workspaces :array workspacesArray)
     (window-info)
@@ -66,3 +75,14 @@
   :exclusive true
   :windowtype "dock"
   (bar))
+
+(defwindow calendar
+  :monitor 0
+  :geometry (geometry :x "0px" :y "0px" :width "250px" :height "200px" :anchor "top right")
+  :stacking "overlay"
+  :focusable false
+  :windowtype "normal"
+  (revealer :reveal calendar-show
+            :transition "slidedown"
+            :duration "300ms"
+    (calendar-popup)))
