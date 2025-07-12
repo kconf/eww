@@ -2,4 +2,63 @@
 
 (defwidget wifi []
   (box :class "status-item wifi-item"
-       (label :text "${wifi-poll}")))
+       :tooltip "${wifi-poll.ssid} - ${wifi-poll.signal_strength_percent}% (${wifi-poll.signal_strength_dbm}dBm)
+Interface: ${wifi-poll.interface}
+Security: ${wifi-poll.security}
+Frequency: ${wifi-poll.frequency}MHz
+IP: ${wifi-poll.ip_address}
+MAC: ${wifi-poll.mac_address}"
+       (label :text "${wifi-poll.signal_icon} ${wifi-poll.status_text}")))
+
+;; Additional WiFi widgets that can use the rich JSON data
+
+(defwidget wifi-simple []
+  (box :class "status-item wifi-simple"
+       (label :text "${wifi-poll.signal_icon}")))
+
+(defwidget wifi-detailed []
+  (box :class "status-item wifi-detailed"
+       :orientation "v"
+       :spacing 2
+    (label :class "wifi-ssid" 
+           :text "${wifi-poll.ssid}")
+    (label :class "wifi-signal"
+           :text "${wifi-poll.signal_icon} ${wifi-poll.signal_strength_percent}%")))
+
+(defwidget wifi-compact []
+  (box :class "status-item wifi-compact"
+       (label :text "${wifi-poll.signal_icon} ${wifi-poll.signal_strength_percent}%")))
+
+(defwidget wifi-status []
+  (box :class "status-item wifi-status"
+       :orientation "h"
+       :spacing 5
+    (label :class "wifi-icon" 
+           :text "${wifi-poll.signal_icon}")
+    (label :class "wifi-info"
+           :text "${wifi-poll.connected ? wifi-poll.ssid : 'Disconnected'}")))
+
+;; WiFi info panel for detailed information
+(defwidget wifi-info-panel []
+  (box :class "wifi-info-panel"
+       :orientation "v"
+       :spacing 5
+    (box :class "wifi-header"
+         :orientation "h"
+         :spacing 10
+      (label :class "wifi-icon-large"
+             :text "${wifi-poll.signal_icon}")
+      (box :orientation "v"
+        (label :class "wifi-ssid-large"
+               :text "${wifi-poll.ssid}")
+        (label :class "wifi-status-text"
+               :text "${wifi-poll.status_text}")))
+    (box :class "wifi-details"
+         :orientation "v"
+         :spacing 3
+      (label :text "Signal: ${wifi-poll.signal_strength_percent}% (${wifi-poll.signal_strength_dbm}dBm)")
+      (label :text "Security: ${wifi-poll.security}")
+      (label :text "Frequency: ${wifi-poll.frequency}MHz")
+      (label :text "Interface: ${wifi-poll.interface}")
+      (label :text "IP Address: ${wifi-poll.ip_address}")
+      (label :text "MAC Address: ${wifi-poll.mac_address}"))))

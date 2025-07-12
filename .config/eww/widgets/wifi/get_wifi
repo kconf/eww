@@ -1,48 +1,141 @@
 #!/bin/sh
 
+# Function to convert dBm to percentage (rough approximation)
+dbm_to_percent() {
+    dbm=$1
+    if [ "$dbm" -ge -50 ]; then
+        echo "100"
+    elif [ "$dbm" -ge -60 ]; then
+        echo "75"
+    elif [ "$dbm" -ge -70 ]; then
+        echo "50"
+    elif [ "$dbm" -ge -80 ]; then
+        echo "25"
+    else
+        echo "0"
+    fi
+}
+
+# Function to get signal strength icon
+get_signal_icon() {
+    percent=$1
+    if [ "$percent" -ge 75 ]; then
+        echo "󰤨"  # Full signal
+    elif [ "$percent" -ge 50 ]; then
+        echo "󰤥"  # Good signal
+    elif [ "$percent" -ge 25 ]; then
+        echo "󰤢"  # Weak signal
+    else
+        echo "󰤯"  # Very weak signal
+    fi
+}
+
+# Function to escape JSON strings
+escape_json() {
+    echo "$1" | sed 's/\\/\\\\/g; s/"/\\"/g'
+}
+
 wifi() {
-    wifi_icon=" "
-    
     # Get the active wifi interface using networkctl
     wifi_interface=$(networkctl list | grep -E "wlan|wifi|wlp" | grep -v "no-carrier" | awk '{print $2}' | head -n1)
 
-    if [ -n "$wifi_interface" ]; then
-        # Check if the interface is up and connected
-        interface_state=$(networkctl status "$wifi_interface" 2>/dev/null | grep "State:" | awk '{print $2}')
-        
-        if [ "$interface_state" = "routable" ] || [ "$interface_state" = "carrier" ]; then
-            # Get SSID and signal strength using iwctl
-            station_info=$(iwctl station "$wifi_interface" show 2>/dev/null)
-            wifi_ssid=$(echo "$station_info" | grep "Connected network" | awk '{print $3}')
-
-    if [ -n "$wifi_ssid" ]; then
-                # Get signal strength for the connected network
-                wifi_strength=$(iwctl station "$wifi_interface" get-networks 2>/dev/null | grep "^\s*>" | awk '{print $(NF-1)}' | sed 's/*$//')
-                
-                if [ -n "$wifi_strength" ]; then
-                    # Convert dBm to percentage (rough approximation)
-                    if [ "$wifi_strength" -ge -50 ]; then
-                        wifi_percent="100"
-                    elif [ "$wifi_strength" -ge -60 ]; then
-                        wifi_percent="75"
-                    elif [ "$wifi_strength" -ge -70 ]; then
-                        wifi_percent="50"
-                    else
-                        wifi_percent="25"
-                    fi
-                    echo "$wifi_icon $wifi_ssid ($wifi_percent%)"
-                else
-                    echo "$wifi_icon $wifi_ssid"
-                fi
-            else
-                echo "$wifi_icon Connected"
-            fi
-    else
-        echo "$wifi_icon Disconnected"
-        fi
-    else
-        echo "$wifi_icon No WiFi Interface"
+    if [ -z "$wifi_interface" ]; then
+        echo '{"status":"no_interface","connected":false,"ssid":"","signal_strength_dbm":0,"signal_strength_percent":0,"signal_icon":"󰤭","interface":"","security":"","frequency":"","ip_address":"","mac_address":"","status_text":"No WiFi Interface"}'
+        return
     fi
+
+    # Check if the interface is up and connected
+    interface_state=$(networkctl status "$wifi_interface" 2>/dev/null | grep "State:" | awk '{print $2}')
+    
+    if [ "$interface_state" != "routable" ] && [ "$interface_state" != "carrier" ]; then
+        echo '{"status":"disconnected","connected":false,"ssid":"","signal_strength_dbm":0,"signal_strength_percent":0,"signal_icon":"󰤭","interface":"'$(escape_json "$wifi_interface")'","security":"","frequency":"","ip_address":"","mac_address":"","status_text":"Disconnected"}'
+        return
+    fi
+
+    # Get detailed station information
+    station_info=$(iwctl station "$wifi_interface" show 2>/dev/null)
+    wifi_ssid=$(echo "$station_info" | grep "Connected network" | awk '{print $3}')
+
+    if [ -z "$wifi_ssid" ]; then
+        echo '{"status":"no_network","connected":false,"ssid":"","signal_strength_dbm":0,"signal_strength_percent":0,"signal_icon":"󰤭","interface":"'$(escape_json "$wifi_interface")'","security":"","frequency":"","ip_address":"","mac_address":"","status_text":"No Network"}'
+        return
+    fi
+
+    # Get signal strength for the connected network
+    wifi_strength_raw=$(iwctl station "$wifi_interface" get-networks 2>/dev/null | grep ">" | sed 's/^[[:space:]]*//' | awk '{print $NF}' | tr -d '[:space:]')
+    
+    # Set default values
+    wifi_strength_dbm=0
+    wifi_percent=0
+    
+    if [ -n "$wifi_strength_raw" ] && [ "$wifi_strength_raw" != "" ]; then
+        # Check if it's in dBm format (negative number) or star format
+        case "$wifi_strength_raw" in
+            -*)
+                # It's already in dBm format
+                wifi_strength_dbm="$wifi_strength_raw"
+                wifi_percent=$(dbm_to_percent "$wifi_strength_raw")
+                ;;
+            ****)
+                # 4 stars = excellent signal
+                wifi_strength_dbm="-45"
+                wifi_percent="100"
+                ;;
+            ***)
+                # 3 stars = good signal
+                wifi_strength_dbm="-55"
+                wifi_percent="75"
+                ;;
+            **)
+                # 2 stars = fair signal
+                wifi_strength_dbm="-65"
+                wifi_percent="50"
+                ;;
+            *)
+                # 1 star = poor signal
+                wifi_strength_dbm="-75"
+                wifi_percent="25"
+                ;;
+        esac
+    fi
+
+    # Get additional network information
+    security=$(echo "$station_info" | grep "Security" | awk '{print $2}')
+    frequency=$(echo "$station_info" | grep "Frequency" | awk '{print $2}')
+    
+    # Get IP address
+    ip_address=$(ip addr show "$wifi_interface" | grep "inet " | awk '{print $2}' | cut -d'/' -f1 | head -n1)
+    
+    # Get MAC address
+    mac_address=$(ip addr show "$wifi_interface" | grep "link/ether" | awk '{print $2}')
+    
+    # Get signal icon
+    signal_icon=$(get_signal_icon "$wifi_percent")
+    
+    # Create status text
+    if [ "$wifi_percent" -gt 0 ]; then
+        status_text="$wifi_ssid (${wifi_percent}%)"
+    else
+        status_text="$wifi_ssid"
+    fi
+
+    # Output JSON
+    cat << EOF
+{
+    "status": "connected",
+    "connected": true,
+    "ssid": "$(escape_json "$wifi_ssid")",
+    "signal_strength_dbm": $wifi_strength_dbm,
+    "signal_strength_percent": $wifi_percent,
+    "signal_icon": "$signal_icon",
+    "interface": "$(escape_json "$wifi_interface")",
+    "security": "$(escape_json "$security")",
+    "frequency": "$(escape_json "$frequency")",
+    "ip_address": "$(escape_json "$ip_address")",
+    "mac_address": "$(escape_json "$mac_address")",
+    "status_text": "$(escape_json "$status_text")"
+}
+EOF
 }
 
 wifi
