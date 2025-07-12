@@ -1,14 +1,54 @@
-(defpoll time-poll :interval "60s" "date '+%H:%M'")
-
+(defpoll time-poll :interval "60s" 
+  "date '+{\"year\":\"%Y\",\"month\":\"%m\",\"day\":\"%d\",\"weekday\":\"%A\",\"weekday_short\":\"%a\",\"month_name\":\"%B\",\"month_short\":\"%b\",\"hour\":\"%H\",\"minute\":\"%M\",\"second\":\"%S\",\"hour_12\":\"%I\",\"ampm\":\"%p\",\"timezone\":\"%Z\",\"iso_date\":\"%Y-%m-%d\",\"iso_datetime\":\"%Y-%m-%dT%H:%M:%S%z\",\"timestamp\":\"%s\"}'")
 
 (defwidget time []
   (eventbox :onhover `eww update calendar-show=true`
             :onhoverlost `eww update calendar-show=false`
     (box :class "status-item time-item"
-         (label :text "  ${time-poll}"))))
+         (label :text "  ${time-poll.hour}:${time-poll.minute}"))))
 
 (defwidget calendar-popup []
   (box :class "calendar-container"
        :orientation "v"
+    (box :class "date-header"
+         :orientation "v"
+         :spacing 5
+      (label :class "date-title" 
+             :text "${time-poll.weekday}, ${time-poll.month_name} ${time-poll.day}, ${time-poll.year}")
+      (label :class "time-display"
+             :text "${time-poll.hour}:${time-poll.minute}"))
     (calendar :class "calendar-widget")))
 
+;; Additional date widgets that can use the rich JSON data
+
+(defwidget date-simple []
+  (box :class "status-item date-item"
+       (label :text "${time-poll.month_short} ${time-poll.day}")))
+
+(defwidget date-full []
+  (box :class "status-item date-full"
+       :orientation "v"
+    (label :class "date-main" 
+           :text "${time-poll.weekday_short}, ${time-poll.month_name} ${time-poll.day}")
+    (label :class "time-main"
+           :text "${time-poll.hour}:${time-poll.minute}")))
+
+(defwidget time-12h []
+  (box :class "status-item time-12h"
+       (label :text "  ${time-poll.hour_12}:${time-poll.minute} ${time-poll.ampm}")))
+
+(defwidget weekday []
+  (box :class "status-item weekday"
+       (label :text "${time-poll.weekday_short}")))
+
+;; Example of a digital clock with date
+(defwidget digital-clock []
+  (box :class "digital-clock"
+       :orientation "v"
+       :spacing 2
+    (label :class "clock-time" 
+           :text "${time-poll.hour}:${time-poll.minute}")
+    (label :class "clock-date"
+           :text "${time-poll.iso_date}")
+    (label :class "clock-day"
+           :text "${time-poll.weekday}")))
