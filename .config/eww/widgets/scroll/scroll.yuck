@@ -1,21 +1,22 @@
 
+;; Optimized separate scripts for better performance and maintainability
 (deflisten workspacesArray :initial "[]"
   `./widgets/scroll/get_scroll_workspaces`)
 
-(defwidget workspaces [array]
+(deflisten window-title :initial "Desktop"
+  `./widgets/scroll/get_window_title`)
+
+(defwidget workspaces []
   (box :class "workspaces"
        :orientation "h"
        :space-evenly false
        :halign "start"
        :spacing 5
 
-     (for entry in array
+     (for entry in workspacesArray
       (button :onclick `scrollmsg workspace "${entry.name}"`
               :class "workspace ${entry.focused ? "focused" : ""}"
            `${entry.name}`))))
-
-(deflisten window-title :initial "Desktop"
-  `./widgets/scroll/get_window_title`)
 
 (defwidget window-info []
   (box :class "window-info"

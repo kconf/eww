@@ -1,14 +1,14 @@
 #!/bin/bash
 
-# Get workspaces and format for eww
+# Optimized workspace monitoring - only listens to workspace events
 get_workspaces() {
-    scrollmsg -t get_workspaces | jq -c '[.[] | {name: .name, focused: .focused}]'
+    scrollmsg -t get_workspaces | jq -c '[.[] | {name: .name, focused: .focused}]' 2>/dev/null || echo '[]'
 }
 
 # Initial output
 get_workspaces
 
-# Monitor for workspace changes
+# Monitor only workspace changes (more efficient)
 scrollmsg -t subscribe '["workspace"]' --monitor 2>/dev/null | {
     while read -r event; do
         get_workspaces

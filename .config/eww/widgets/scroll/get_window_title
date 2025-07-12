@@ -1,8 +1,9 @@
 #!/bin/bash
 
-# Get focused window title
+# Optimized window title monitoring - only listens to window events
 get_focused_window() {
-    focused_window=$(scrollmsg -t get_tree | jq -r '.. | select(.focused? == true and .name? != null) | .name' | head -1)
+    focused_window=$(scrollmsg -t get_tree | jq -r '.. | select(.focused? == true and .name? != null) | .name' 2>/dev/null | head -1)
+    
     if [ -n "$focused_window" ] && [ "$focused_window" != "null" ]; then
         # Limit title length to prevent overflow
         if [ ${#focused_window} -gt 50 ]; then
@@ -15,11 +16,12 @@ get_focused_window() {
     fi
 }
 
+# Initial output
 get_focused_window
 
-# Monitor for window changes
-scrollmsg -t subscribe '["window", "workspace"]' --monitor | {
+# Monitor only window changes (more efficient than window+workspace)
+scrollmsg -t subscribe '["window"]' --monitor 2>/dev/null | {
     while read -r event; do
         get_focused_window
     done
-} 
+}
