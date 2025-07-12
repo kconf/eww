@@ -1,0 +1,14 @@
+(defpoll time-poll :interval "60s" "date '+%H:%M'")
+
+
+(defwidget time []
+  (eventbox :onhover `eww update calendar-show=true`
+            :onhoverlost `eww update calendar-show=false`
+    (box :class "status-item time-item"
+         (label :text "  ${time-poll}"))))
+
+(defwidget calendar-popup []
+  (box :class "calendar-container"
+       :orientation "v"
+    (calendar :class "calendar-widget")))
+

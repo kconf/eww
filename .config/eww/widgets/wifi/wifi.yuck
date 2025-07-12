@@ -1,0 +1,5 @@
+(defpoll wifi-poll :interval "5s" "./widgets/wifi/get_wifi")
+
+(defwidget wifi []
+  (box :class "status-item wifi-item"
+       (label :text "${wifi-poll}")))

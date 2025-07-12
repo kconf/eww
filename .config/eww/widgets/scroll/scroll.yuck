@@ -1,0 +1,25 @@
+
+(deflisten workspacesArray :initial "[]"
+  `./widgets/scroll/get_scroll_workspaces`)
+
+(defwidget workspaces [array]
+  (box :class "workspaces"
+       :orientation "h"
+       :space-evenly false
+       :halign "start"
+       :spacing 5
+
+     (for entry in array
+      (button :onclick `scrollmsg workspace "${entry.name}"`
+              :class "workspace ${entry.focused ? "focused" : ""}"
+           `${entry.name}`))))
+
+(deflisten window-title :initial "Desktop"
+  `./widgets/scroll/get_window_title`)
+
+(defwidget window-info []
+  (box :class "window-info"
+       :halign "center"
+       (label :class "window-title"
+              :limit-width 60
+              :text "${window-title}")))

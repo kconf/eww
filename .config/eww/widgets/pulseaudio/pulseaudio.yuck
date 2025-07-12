@@ -1,0 +1,6 @@
+(defpoll volume-poll :interval "1s" "./widgets/pulseaudio/get_vol")
+
+(defwidget volume []
+  (eventbox :onclick "pavucontrol &"
+    (box :class "status-item volume-item"
+         (label :text "${volume-poll}"))))

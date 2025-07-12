@@ -1,55 +1,7 @@
-(deflisten workspacesArray :initial "[]"
-  `./scripts/get_scroll_workspaces`)
-
-(defwidget workspaces [array]
-  (box :class "workspaces"
-       :orientation "h"
-       :space-evenly false
-       :halign "start"
-       :spacing 5
-
-     (for entry in array
-      (button :onclick `scrollmsg workspace "${entry.name}"`
-              :class "workspace ${entry.focused ? "focused" : ""}"
-           `${entry.name}`))))
-
-(deflisten window-title :initial "Desktop"
-  `./scripts/get_window_title`)
-
-(defwidget window-info []
-  (box :class "window-info"
-       :halign "center"
-       (label :class "window-title"
-              :limit-width 60
-              :text "${window-title}")))
-
-(defpoll wifi-poll :interval "5s" "./scripts/get_wifi")
-
-(defwidget wifi []
-  (box :class "status-item wifi-item"
-       (label :text "${wifi-poll}")))
-
-(defpoll volume-poll :interval "1s" "./scripts/get_vol")
-
-(defwidget volume []
-  (eventbox :onclick "pavucontrol &"
-    (box :class "status-item volume-item"
-         (label :text "${volume-poll}"))))
-
-(defpoll time-poll :interval "60s" "date '+%H:%M'")
-
-(defvar calendar-show false)
-
-(defwidget time []
-  (eventbox :onhover `eww update calendar-show=true`
-            :onhoverlost `eww update calendar-show=false`
-    (box :class "status-item time-item"
-         (label :text "  ${time-poll}"))))
-
-(defwidget calendar-popup []
-  (box :class "calendar-container"
-       :orientation "v"
-    (calendar :class "calendar-widget")))
+(include "widgets/wifi/wifi.yuck")
+(include "widgets/pulseaudio/pulseaudio.yuck")
+(include "widgets/date/date.yuck")
+(include "widgets/scroll/scroll.yuck")
 
 (defwidget status-bar []
   (box :class "status-bar"
@@ -76,6 +28,8 @@
   :exclusive true
   :windowtype "dock"
   (bar))
+
+(defvar calendar-show false)
 
 (defwindow calendar
   :monitor 0
