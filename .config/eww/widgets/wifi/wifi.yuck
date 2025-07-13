@@ -1,20 +1,22 @@
-(defpoll wifi-poll :interval "5s" "./widgets/wifi/get_wifi")
+(defpoll wifi-poll :interval "5s" 
+  :initial '{}'
+  "./widgets/wifi/get_wifi")
 
 (defwidget wifi []
   (box :class "status-item wifi-item"
        :tooltip "${wifi-poll.ssid} - ${wifi-poll.signal_strength_percent}% (${wifi-poll.signal_strength_dbm}dBm)
-Interface: ${wifi-poll.interface}
-Security: ${wifi-poll.security}
-Frequency: ${wifi-poll.frequency}MHz
-IP: ${wifi-poll.ip_address}
-MAC: ${wifi-poll.mac_address}"
-       (label :text "${wifi-poll.signal_icon} ${wifi-poll.status_text}")))
+                Interface: ${wifi-poll.interface}
+    Security: ${wifi-poll.security}
+    Frequency: ${wifi-poll.frequency}MHz
+                IP: ${wifi-poll.ip_address}
+    MAC: ${wifi-poll.mac_address}"
+    (label :text "${wifi-poll.signal_icon} ${wifi-poll.status_text}")))
 
 ;; Additional WiFi widgets that can use the rich JSON data
 
 (defwidget wifi-simple []
   (box :class "status-item wifi-simple"
-       (label :text "${wifi-poll.signal_icon}")))
+    (label :text "${wifi-poll.signal_icon}")))
 
 (defwidget wifi-detailed []
   (box :class "status-item wifi-detailed"
@@ -27,7 +29,7 @@ MAC: ${wifi-poll.mac_address}"
 
 (defwidget wifi-compact []
   (box :class "status-item wifi-compact"
-       (label :text "${wifi-poll.signal_icon} ${wifi-poll.signal_strength_percent}%")))
+    (label :text "${wifi-poll.signal_icon} ${wifi-poll.signal_strength_percent}%")))
 
 (defwidget wifi-status []
   (box :class "status-item wifi-status"

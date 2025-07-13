@@ -1,11 +1,12 @@
 (defpoll time-poll :interval "60s" 
-  "date '+{\"year\":\"%Y\",\"month\":\"%m\",\"day\":\"%d\",\"weekday\":\"%A\",\"weekday_short\":\"%a\",\"month_name\":\"%B\",\"month_short\":\"%b\",\"hour\":\"%H\",\"minute\":\"%M\",\"second\":\"%S\",\"hour_12\":\"%I\",\"ampm\":\"%p\",\"timezone\":\"%Z\",\"iso_date\":\"%Y-%m-%d\",\"iso_datetime\":\"%Y-%m-%dT%H:%M:%S%z\",\"timestamp\":\"%s\"}'")
+  :initial '{}'
+  `date +'{"year":"%Y","month":"%m","day":"%d","weekday":"%A","weekday_short":"%a","month_name":"%B","month_short":"%b","hour":"%H","minute":"%M","second":"%S","hour_12":"%I","ampm":"%p","timezone":"%Z","iso_date":"%Y-%m-%d","iso_datetime":"%Y-%m-%dT%H:%M:%S%z","timestamp":"%s"}'`)
 
 (defwidget time []
   (eventbox :onhover `eww update calendar-show=true`
             :onhoverlost `eww update calendar-show=false`
     (box :class "status-item time-item"
-         (label :text "  ${time-poll.hour}:${time-poll.minute}"))))
+         (label :text "${time-poll.hour}:${time-poll.minute}"))))
 
 (defwidget calendar-popup []
   (box :class "calendar-container"
