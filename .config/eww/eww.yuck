@@ -1,7 +1,11 @@
 (include "widgets/wifi/wifi.yuck")
 (include "widgets/pulseaudio/pulseaudio.yuck")
 (include "widgets/date/date.yuck")
-(include "widgets/scroll/scroll.yuck")
+(include "widgets/universal/universal.yuck")
+
+;; Optional: Include specific WM widgets for advanced use cases
+;; (include "widgets/scroll/scroll.yuck")
+;; (include "widgets/hyprland/hyprland.yuck")
 
 (defwidget status-bar []
   (box :class "status-bar"
@@ -17,8 +21,8 @@
 (defwidget bar []
   (centerbox :class "bar"
              :orientation "h"
-    (workspaces :array workspacesArray)
-    (window-info)
+    (universal-workspaces)
+    (universal-window-info)
     (status-bar)))
 
 (defwindow eww-bar

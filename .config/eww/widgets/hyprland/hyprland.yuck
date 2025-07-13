@@ -1,0 +1,54 @@
+;; Hyprland workspace and window widgets
+(deflisten hyprland-workspaces :initial "[]"
+  `./widgets/hyprland/get_hyprland_workspaces`)
+
+(deflisten hyprland-window-title :initial "Desktop"
+  `./widgets/hyprland/get_hyprland_window_title`)
+
+(defwidget hyprland-workspaces []
+  (box :class "workspaces hyprland-workspaces"
+       :orientation "h"
+       :space-evenly false
+       :halign "start"
+       :spacing 5
+
+     (for entry in hyprland-workspaces
+      (button :onclick `hyprctl dispatch workspace ${entry.id}`
+              :class "workspace ${entry.focused ? "focused" : ""} ${entry.windows > 0 ? "occupied" : "empty"}"
+              :tooltip "Workspace ${entry.name} (${entry.windows} windows)"
+           `${entry.name}`))))
+
+(defwidget hyprland-window-info []
+  (box :class "window-info hyprland-window-info"
+       :halign "center"
+       (label :class "window-title"
+              :limit-width 60
+              :text "${hyprland-window-title}")))
+
+;; Combined widget for both workspaces and window info
+(defwidget hyprland-bar []
+  (box :class "hyprland-bar"
+       :orientation "h"
+       :spacing 10
+    (hyprland-workspaces)
+    (hyprland-window-info)))
+
+;; Simple workspace widget (just numbers/names)
+(defwidget hyprland-workspaces-simple []
+  (box :class "workspaces-simple"
+       :orientation "h"
+       :spacing 3
+    (for entry in hyprland-workspaces
+      (label :class "workspace-indicator ${entry.focused ? "focused" : ""} ${entry.windows > 0 ? "occupied" : "empty"}"
+             :text "${entry.name}"))))
+
+;; Compact workspace widget with dots
+(defwidget hyprland-workspaces-dots []
+  (box :class "workspaces-dots"
+       :orientation "h"
+       :spacing 5
+    (for entry in hyprland-workspaces
+      (button :onclick `hyprctl dispatch workspace ${entry.id}`
+              :class "workspace-dot ${entry.focused ? "focused" : ""} ${entry.windows > 0 ? "occupied" : "empty"}"
+              :tooltip "Workspace ${entry.name}"
+           "●"))))

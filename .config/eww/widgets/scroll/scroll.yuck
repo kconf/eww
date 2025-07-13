@@ -1,5 +1,3 @@
-
-;; Optimized separate scripts for better performance and maintainability
 (deflisten workspacesArray :initial "[]"
   `./widgets/scroll/get_scroll_workspaces`)
 

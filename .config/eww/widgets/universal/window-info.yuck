@@ -1,0 +1,30 @@
+;; Universal window info widget that adapts to different window managers
+
+;; Conditional window title data based on WM
+(deflisten universal-window-title :initial "Desktop"
+  `if [ "$(./utils/detect_wm)" = "hyprland" ]; then 
+     ./widgets/hyprland/get_hyprland_window_title
+   elif [ "$(./utils/detect_wm)" = "scroll" ]; then 
+     ./widgets/scroll/get_window_title
+   elif [ "$(./utils/detect_wm)" = "sway" ]; then 
+     ./widgets/scroll/get_window_title
+   else 
+     echo "Desktop"
+   fi`)
+
+;; Universal window info widget
+(defwidget universal-window-info []
+  (box :class "window-info universal-window-info wm-${current-wm}"
+       :halign "center"
+       :visible "${current-wm != "unknown"}"
+       (label :class "window-title"
+              :limit-width 60
+              :text "${universal-window-title}")))
+
+;; Fallback window info for unknown WMs
+(defwidget fallback-window-info []
+  (box :class "window-info fallback-window-info"
+       :halign "center"
+       :visible "${current-wm == "unknown"}"
+    (label :class "window-title" 
+           :text "Desktop")))

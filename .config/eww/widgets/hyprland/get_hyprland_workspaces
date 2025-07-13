@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# Get hyprland workspace and window information
+get_hyprland_workspaces() {
+    # Get workspaces using hyprctl
+    hyprctl workspaces -j | jq -c '[.[] | {name: .name, id: .id, focused: (.id == (.monitor | tonumber)), windows: .windows}] | sort_by(.id)' 2>/dev/null || echo '[]'
+}
+
+# Get current workspace info for focused detection
+get_current_workspace() {
+    hyprctl activewindow -j | jq -r '.workspace.id' 2>/dev/null || echo "1"
+}
+
+# Get workspaces with correct focused state
+get_workspaces_info() {
+    current_workspace=$(get_current_workspace)
+    hyprctl workspaces -j | jq -c --arg current "$current_workspace" '[.[] | {name: (.name // (.id | tostring)), id: .id, focused: (.id == ($current | tonumber)), windows: .windows}] | sort_by(.id)' 2>/dev/null || echo '[]'
+}
+
+# Initial output
+get_workspaces_info
+
+# Monitor for workspace changes using socat to listen to hyprland events
+if command -v socat >/dev/null 2>&1; then
+    # Use socat to monitor hyprland events
+    socat -u UNIX-CONNECT:/tmp/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock - | while read -r line; do
+        # Filter for workspace-related events
+        case "$line" in
+            workspace*|focusedmon*|createworkspace*|destroyworkspace*)
+                get_workspaces_info
+                ;;
+        esac
+    done
+else
+    # Fallback to polling if socat is not available
+    while true; do
+        sleep 2
+        get_workspaces_info
+    done
+fi

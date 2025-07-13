@@ -1,0 +1,45 @@
+#!/bin/bash
+
+# Get focused window title from hyprland
+get_focused_window() {
+    window_info=$(hyprctl activewindow -j 2>/dev/null)
+    
+    if [ -n "$window_info" ] && [ "$window_info" != "null" ]; then
+        window_title=$(echo "$window_info" | jq -r '.title' 2>/dev/null)
+        
+        if [ -n "$window_title" ] && [ "$window_title" != "null" ] && [ "$window_title" != "" ]; then
+            # Limit title length to prevent overflow
+            if [ ${#window_title} -gt 50 ]; then
+                echo "${window_title:0:47}..."
+            else
+                echo "$window_title"
+            fi
+        else
+            echo "Desktop"
+        fi
+    else
+        echo "Desktop"
+    fi
+}
+
+# Initial output
+get_focused_window
+
+# Monitor for window changes using socat to listen to hyprland events
+if command -v socat >/dev/null 2>&1; then
+    # Use socat to monitor hyprland events
+    socat -u UNIX-CONNECT:/tmp/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock - | while read -r line; do
+        # Filter for window-related events
+        case "$line" in
+            activewindow*|openwindow*|closewindow*|windowtitle*)
+                get_focused_window
+                ;;
+        esac
+    done
+else
+    # Fallback to polling if socat is not available
+    while true; do
+        sleep 2
+        get_focused_window
+    done
+fi

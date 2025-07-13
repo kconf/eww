@@ -1,0 +1,49 @@
+#!/bin/bash
+
+# Detect current window manager
+detect_wm() {
+    # Check for Hyprland
+    if [ -n "$HYPRLAND_INSTANCE_SIGNATURE" ] && command -v hyprctl >/dev/null 2>&1; then
+        echo "hyprland"
+        return
+    fi
+    
+    # Check for Sway/Scroll
+    if [ -n "$SWAYSOCK" ] && command -v swaymsg >/dev/null 2>&1; then
+        echo "sway"
+        return
+    fi
+    
+    # Check for scroll specifically
+    if command -v scrollmsg >/dev/null 2>&1; then
+        echo "scroll"
+        return
+    fi
+    
+    # Check for i3
+    if [ -n "$I3SOCK" ] && command -v i3-msg >/dev/null 2>&1; then
+        echo "i3"
+        return
+    fi
+    
+    # Check processes for other WMs
+    if pgrep -x "hyprland" >/dev/null 2>&1; then
+        echo "hyprland"
+        return
+    fi
+    
+    if pgrep -x "sway" >/dev/null 2>&1; then
+        echo "sway"
+        return
+    fi
+    
+    if pgrep -x "i3" >/dev/null 2>&1; then
+        echo "i3"
+        return
+    fi
+    
+    # Default fallback
+    echo "unknown"
+}
+
+detect_wm

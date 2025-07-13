@@ -1,0 +1,41 @@
+;; Universal workspace widget that adapts to different window managers
+(defpoll current-wm :interval "10s" 
+  `./utils/detect_wm`)
+
+;; Conditional workspace data based on WM
+(deflisten universal-workspaces-data :initial "[]"
+  `if [ "$(./utils/detect_wm)" = "hyprland" ]; then 
+     ./widgets/hyprland/get_hyprland_workspaces
+   elif [ "$(./utils/detect_wm)" = "scroll" ]; then 
+     ./widgets/scroll/get_scroll_workspaces
+   elif [ "$(./utils/detect_wm)" = "sway" ]; then 
+     ./widgets/scroll/get_scroll_workspaces
+   else 
+     echo "[]"
+   fi`)
+
+;; Universal workspace widget
+(defwidget universal-workspaces []
+  (box :class "workspaces universal-workspaces"
+       :orientation "h"
+       :space-evenly false
+       :halign "start"
+       :spacing 5
+       :visible "${current-wm != "unknown"}"
+
+    (for entry in universal-workspaces-data
+      (button :onclick "${current-wm == "hyprland" ? "hyprctl dispatch workspace ${entry.id}" :
+                        current-wm == "scroll" ? "scrollmsg workspace \"${entry.name}\"" :
+                        current-wm == "sway" ? "swaymsg workspace \"${entry.name}\"" :
+                        "echo 'Unsupported WM'"}"
+              :class "workspace ${entry.focused ? "focused" : ""} ${entry.windows > 0 ? "occupied" : "empty"} wm-${current-wm}"
+              :tooltip "${current-wm == "hyprland" ? "Workspace ${entry.name} (${entry.windows} windows)" :
+                        "Workspace ${entry.name}"}"
+           `${entry.name}`))))
+
+;; Fallback workspace widget for unknown WMs
+(defwidget fallback-workspaces []
+  (box :class "workspaces fallback-workspaces"
+       :visible "${current-wm == "unknown"}"
+    (label :class "wm-status" 
+           :text "No supported WM detected")))
