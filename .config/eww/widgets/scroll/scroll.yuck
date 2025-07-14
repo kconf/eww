@@ -1,24 +1,25 @@
-(deflisten workspacesArray :initial "[]"
+(deflisten scroll-workspaces-data :initial "[]"
   `./widgets/scroll/get_scroll_workspaces`)
 
-(deflisten window-title :initial "Desktop"
+(deflisten scroll-window-title-data :initial "Desktop"
   `./widgets/scroll/get_window_title`)
 
-(defwidget workspaces []
-  (box :class "workspaces"
+(defwidget scroll-workspaces []
+  (box :class "workspaces scroll-workspaces"
        :orientation "h"
        :space-evenly false
        :halign "start"
        :spacing 5
 
-     (for entry in workspacesArray
+     (for entry in scroll-workspaces-data
       (button :onclick `scrollmsg workspace "${entry.name}"`
-              :class "workspace ${entry.focused ? "focused" : ""}"
+              :class "workspace ${entry.focused ? "focused" : ""} ${entry.windows > 0 ? "occupied" : "empty"}"
+              :tooltip "Workspace ${entry.name} (${entry.windows} windows)"
            `${entry.name}`))))
 
-(defwidget window-info []
-  (box :class "window-info"
+(defwidget scroll-window-info []
+  (box :class "window-info scroll-window-info"
        :halign "center"
        (label :class "window-title"
               :limit-width 60
-              :text "${window-title}")))
+              :text "${scroll-window-title-data}")))

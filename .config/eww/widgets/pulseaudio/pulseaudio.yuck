@@ -1,6 +1,11 @@
-(defpoll volume-poll :interval "1s" "./widgets/pulseaudio/get_vol")
+(defpoll volume-poll :interval "1s" 
+  :initial '{}'
+  "./widgets/pulseaudio/get_vol")
 
 (defwidget volume []
   (eventbox :onclick "pavucontrol &"
+            :tooltip "Volume: ${volume-poll.volume}%${volume-poll.muted ? " (Muted)" : ""}"
     (box :class "status-item volume-item"
-         (label :text "${volume-poll}"))))
+         :spacing 6
+         (label :class "volume-icon" :text "${volume-poll.icon}")
+         (label :class "volume-text" :text "${volume-poll.volume}%"))))

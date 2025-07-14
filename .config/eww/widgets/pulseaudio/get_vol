@@ -1,16 +1,36 @@
 #!/bin/sh
 
-volume_icon=" "
+# Get volume icon based on volume level and mute status
+get_volume_icon() {
+    local volume=$1
+    local is_muted=$2
+    
+    if [ "$is_muted" = "true" ]; then
+        echo "🔇"
+    elif [ "$volume" -eq 0 ]; then
+        echo "🔈"
+    elif [ "$volume" -le 30 ]; then
+        echo "🔉"
+    elif [ "$volume" -le 70 ]; then
+        echo "🔊"
+    else
+        echo "��"
+    fi
+}
 
 if command -v pamixer &>/dev/null; then
-    if [ true == $(pamixer --get-mute) ]; then
-        echo "$volume_icon 0%"
-        exit
+    is_muted=$(pamixer --get-mute)
+    volume=$(pamixer --get-volume)
+    
+    if [ "$is_muted" = "true" ]; then
+        icon=$(get_volume_icon 0 true)
+        echo "{\"volume\":$volume,\"muted\":true,\"icon\":\"$icon\",\"text\":\"$icon Muted\"}"
     else
-        volume=$(pamixer --get-volume)
-        echo "$volume_icon $volume%"
+        icon=$(get_volume_icon $volume false)
+        echo "{\"volume\":$volume,\"muted\":false,\"icon\":\"$icon\",\"text\":\"$icon $volume%\"}"
     fi
 else
     volume=$(amixer -D pulse sget Master | awk -F '[^0-9]+' '/Left:/{print $3}')
-    echo "$volume_icon $volume%"
+    icon=$(get_volume_icon $volume false)
+    echo "{\"volume\":$volume,\"muted\":false,\"icon\":\"$icon\",\"text\":\"$icon $volume%\"}"
 fi

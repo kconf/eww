@@ -102,6 +102,16 @@
   color: #1d2021;
 }
 
+/* Icon and text styling */
+.time-icon, .volume-icon {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.time-text, .volume-text {
+  font-weight: 600;
+}
+
 /* System Tray */
 .systray-item {
   background: #3c3836;

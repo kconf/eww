@@ -1,0 +1,38 @@
+;; Theme Variables - Catppuccin Mocha Theme
+;; Define theme-specific variables for easy theming support
+
+;; Icon definitions (using Nerd Font icons for better consistency)
+(defvar theme-time-icon "󰥔")
+(defvar theme-wifi-connected-icon "󰤨")
+(defvar theme-wifi-disconnected-icon "󰤭")
+(defvar theme-volume-high-icon "󰕾")
+(defvar theme-volume-medium-icon "󰖀")
+(defvar theme-volume-low-icon "󰕿")
+(defvar theme-volume-muted-icon "󰝟")
+
+;; Color scheme variables - Catppuccin Mocha
+(defvar theme-bg-primary "#1e1e2e")
+(defvar theme-bg-secondary "#313244")
+(defvar theme-fg-primary "#cdd6f4")
+(defvar theme-fg-secondary "#a6adc8")
+(defvar theme-border-color "#45475a")
+
+;; Status item colors
+(defvar theme-time-color "#f5c2e7")
+(defvar theme-wifi-color "#a6e3a1") 
+(defvar theme-volume-color "#94e2d5")
+(defvar theme-workspace-focused "#f9e2af")
+(defvar theme-workspace-hover "#89b4fa")
+
+;; Font settings
+(defvar theme-font-family "JetBrainsMono Nerd Font")
+(defvar theme-font-size "12px")
+(defvar theme-font-weight-normal "500")
+(defvar theme-font-weight-bold "600")
+
+;; Layout settings
+(defvar theme-bar-height "30px")
+(defvar theme-border-radius "8px")
+(defvar theme-spacing-small "4px")
+(defvar theme-spacing-medium "8px")
+(defvar theme-padding-item "6px 10px")

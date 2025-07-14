@@ -1,38 +1,82 @@
-(include "widgets/wifi/wifi.yuck")
-(include "widgets/pulseaudio/pulseaudio.yuck")
+;; Theme includes
+(include "themes/gruvbox-dark.yuck")
+
+;; Widget includes
+(include "widgets/scroll/scroll.yuck")
+(include "widgets/hyprland/hyprland.yuck")
 (include "widgets/date/date.yuck")
-(include "widgets/universal/universal.yuck")
+(include "widgets/pulseaudio/pulseaudio.yuck") 
+(include "widgets/wifi/wifi.yuck")
 
-;; Optional: Include specific WM widgets for advanced use cases
-;; (include "widgets/scroll/scroll.yuck")
-;; (include "widgets/hyprland/hyprland.yuck")
+;; Hyprland bar
+(defwindow hyprland-bar
+  :monitor 0
+  :windowtype "dock"
+  :geometry (geometry :x "0%" 
+                      :y "0%" 
+                      :width "100%" 
+                      :height "30px"
+                      :anchor "top center")
+  :stacking "fg"
+  :exclusive true
+  (centerbox :orientation "h"
+    (box :class "left" 
+         :orientation "h" 
+         :space-evenly false 
+         :halign "start"
+      (hyprland-workspaces))
+    (box :class "center" 
+         :orientation "h" 
+         :space-evenly false 
+         :halign "center"
+      (hyprland-window-info))
+    (box :class "right" 
+         :orientation "h" 
+         :space-evenly false 
+         :halign "end"
+      (status-bar))))
 
+;; Scroll/Sway bar  
+(defwindow scroll-bar
+  :monitor 0
+  :windowtype "dock"
+  :geometry (geometry :x "0%" 
+                      :y "0%" 
+                      :width "100%" 
+                      :height "30px"
+                      :anchor "top center")
+  :stacking "fg"
+  :exclusive true
+  (centerbox :orientation "h"
+    (box :class "left" 
+         :orientation "h" 
+         :space-evenly false 
+         :halign "start"
+      (scroll-workspaces))
+    (box :class "center" 
+         :orientation "h" 
+         :space-evenly false 
+         :halign "center"
+      (scroll-window-info))
+    (box :class "right" 
+         :orientation "h" 
+         :space-evenly false 
+         :halign "end"
+      (status-bar))))
+
+;; Shared status bar widget
 (defwidget status-bar []
   (box :class "status-bar"
        :orientation "h"
        :space-evenly false
        :halign "end"
-       :spacing 10
+       :spacing 8
     (wifi)
     (volume)
     (time)
     (systray :class "systray-item")))
 
-(defwidget bar []
-  (centerbox :class "bar"
-             :orientation "h"
-    (universal-workspaces)
-    (universal-window-info)
-    (status-bar)))
-
-(defwindow eww-bar
-  :monitor 0
-  :geometry (geometry :x "0%" :y "0%" :width "100%" :height "26px" :anchor "top center")
-  :stacking "fg"
-  :exclusive true
-  :windowtype "dock"
-  (bar))
-
+;; Calendar variables and window
 (defvar calendar-show false)
 
 (defwindow calendar
@@ -44,4 +88,4 @@
   (revealer :reveal calendar-show
             :transition "slidedown"
             :duration "300ms"
-    (calendar-popup)))
+    (time)))

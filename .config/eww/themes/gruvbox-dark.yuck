@@ -1,0 +1,38 @@
+;; Theme Variables - Gruvbox Dark Theme
+;; Define theme-specific variables for easy theming support
+
+;; Icon definitions
+(defvar theme-time-icon "🕐")
+(defvar theme-wifi-connected-icon "📶")
+(defvar theme-wifi-disconnected-icon "📵")
+(defvar theme-volume-high-icon "🔊")
+(defvar theme-volume-medium-icon "🔉")
+(defvar theme-volume-low-icon "🔈")
+(defvar theme-volume-muted-icon "🔇")
+
+;; Color scheme variables  
+(defvar theme-bg-primary "#282828")
+(defvar theme-bg-secondary "#3c3836")
+(defvar theme-fg-primary "#ebdbb2")
+(defvar theme-fg-secondary "#a89984")
+(defvar theme-border-color "#504945")
+
+;; Status item colors
+(defvar theme-time-color "#d3869b")
+(defvar theme-wifi-color "#b8bb26") 
+(defvar theme-volume-color "#8ec07c")
+(defvar theme-workspace-focused "#fabd2f")
+(defvar theme-workspace-hover "#458588")
+
+;; Font settings
+(defvar theme-font-family "JetBrainsMono Nerd Font")
+(defvar theme-font-size "12px")
+(defvar theme-font-weight-normal "500")
+(defvar theme-font-weight-bold "600")
+
+;; Layout settings
+(defvar theme-bar-height "30px")
+(defvar theme-border-radius "6px")
+(defvar theme-spacing-small "4px")
+(defvar theme-spacing-medium "8px")
+(defvar theme-padding-item "4px 8px")
