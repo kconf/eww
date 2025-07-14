@@ -2,16 +2,16 @@
 # Theme switcher for eww configuration
 
 THEMES_DIR="$(dirname "$0")/themes"
-CONFIG_FILE="$(dirname "$0")/eww.yuck"
+CONFIG_DIR="$(dirname "$0")"
 
 show_help() {
     echo "EWW Theme Switcher"
     echo "Usage: $0 [theme-name]"
     echo ""
     echo "Available themes:"
-    for theme in "$THEMES_DIR"/*.yuck; do
-        if [ -f "$theme" ]; then
-            basename "$theme" .yuck | sed 's/^/  - /'
+    for theme in "$THEMES_DIR"/*.scss; do
+        if [ -f "$theme" ] && [[ ! "$theme" =~ current\.scss$ ]]; then
+            basename "$theme" .scss | sed 's/^/  - /'
         fi
     done
     echo ""
@@ -22,14 +22,14 @@ show_help() {
 
 apply_theme() {
     local theme="$1"
-    local theme_file="$THEMES_DIR/$theme.yuck"
+    local theme_file="$THEMES_DIR/$theme.scss"
     
     if [ ! -f "$theme_file" ]; then
         echo "❌ Theme '$theme' not found!"
         echo "Available themes:"
-        for t in "$THEMES_DIR"/*.yuck; do
-            if [ -f "$t" ]; then
-                basename "$t" .yuck | sed 's/^/  - /'
+        for t in "$THEMES_DIR"/*.scss; do
+            if [ -f "$t" ] && [[ ! "$t" =~ current\.scss$ ]]; then
+                basename "$t" .scss | sed 's/^/  - /'
             fi
         done
         exit 1
@@ -37,8 +37,13 @@ apply_theme() {
     
     echo "🎨 Applying theme: $theme"
     
-    # Update the theme include in eww.yuck
-    sed -i "s|^(include \"themes/.*\.yuck\")|^(include \"themes/$theme.yuck\")|" "$CONFIG_FILE"
+    # Update the current theme symlink
+    cd "$THEMES_DIR"
+    ln -sf "$theme.scss" current.scss
+    cd - > /dev/null
+    
+    # Copy theme to main CSS file
+    cp "$theme_file" "$CONFIG_DIR/eww.scss"
     
     # Reload eww
     echo "🔄 Reloading eww..."
@@ -48,7 +53,11 @@ apply_theme() {
 }
 
 get_current_theme() {
-    grep "^(include \"themes/" "$CONFIG_FILE" | sed 's/.*themes\/\(.*\)\.yuck.*/\1/'
+    if [ -L "$THEMES_DIR/current.scss" ]; then
+        readlink "$THEMES_DIR/current.scss" | sed 's/\.scss$//'
+    else
+        echo "none"
+    fi
 }
 
 if [ $# -eq 0 ]; then
