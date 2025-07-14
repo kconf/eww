@@ -4,15 +4,7 @@
 
 ;; Conditional workspace data based on WM
 (deflisten universal-workspaces-data :initial "[]"
-  `if [ "$(./utils/detect_wm)" = "hyprland" ]; then 
-     ./widgets/hyprland/get_hyprland_workspaces
-   elif [ "$(./utils/detect_wm)" = "scroll" ]; then 
-     ./widgets/scroll/get_scroll_workspaces
-   elif [ "$(./utils/detect_wm)" = "sway" ]; then 
-     ./widgets/scroll/get_scroll_workspaces
-   else 
-     echo "[]"
-   fi`)
+  `./widgets/universal/get_universal_workspaces`)
 
 ;; Universal workspace widget
 (defwidget universal-workspaces []

@@ -2,15 +2,7 @@
 
 ;; Conditional window title data based on WM
 (deflisten universal-window-title :initial "Desktop"
-  `if [ "$(./utils/detect_wm)" = "hyprland" ]; then 
-     ./widgets/hyprland/get_hyprland_window_title
-   elif [ "$(./utils/detect_wm)" = "scroll" ]; then 
-     ./widgets/scroll/get_window_title
-   elif [ "$(./utils/detect_wm)" = "sway" ]; then 
-     ./widgets/scroll/get_window_title
-   else 
-     echo "Desktop"
-   fi`)
+  `./widgets/universal/get_universal_window_title`)
 
 ;; Universal window info widget
 (defwidget universal-window-info []

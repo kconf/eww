@@ -23,14 +23,23 @@ get_workspaces_info
 # Monitor for workspace changes using socat to listen to hyprland events
 if command -v socat >/dev/null 2>&1; then
     # Use socat to monitor hyprland events
-    socat -u UNIX-CONNECT:/tmp/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock - | while read -r line; do
-        # Filter for workspace-related events
-        case "$line" in
-            workspace*|focusedmon*|createworkspace*|destroyworkspace*)
-                get_workspaces_info
-                ;;
-        esac
-    done
+    HYPR_SOCKET="$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock"
+    if [ -S "$HYPR_SOCKET" ]; then
+        socat -u "UNIX-CONNECT:$HYPR_SOCKET" - | while read -r line; do
+            # Filter for workspace-related events
+            case "$line" in
+                workspace*|focusedmon*|createworkspace*|destroyworkspace*)
+                    get_workspaces_info
+                    ;;
+            esac
+        done
+    else
+        # Fallback to polling if socket not found
+        while true; do
+            sleep 2
+            get_workspaces_info
+        done
+    fi
 else
     # Fallback to polling if socat is not available
     while true; do

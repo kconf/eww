@@ -1,6 +1,32 @@
 #!/bin/bash
 
-# Get focused window title from hyprland
+# Get focused # Monitor for window changes using socat to listen to hyprland events
+if command -v socat >/dev/null 2>&1; then
+    # Use socat to monitor hyprland events
+    HYPR_SOCKET="$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock"
+    if [ -S "$HYPR_SOCKET" ]; then
+        socat -u "UNIX-CONNECT:$HYPR_SOCKET" - | while read -r line; do
+            # Filter for window-related events
+            case "$line" in
+                activewindow*|openwindow*|closewindow*|windowtitle*)
+                    get_active_window
+                    ;;
+            esac
+        done
+    else
+        # Fallback to polling if socket not found
+        while true; do
+            sleep 2
+            get_active_window
+        done
+    fi
+else
+    # Fallback to polling if socat is not available
+    while true; do
+        sleep 2
+        get_active_window
+    done
+fihyprland
 get_focused_window() {
     window_info=$(hyprctl activewindow -j 2>/dev/null)
     
