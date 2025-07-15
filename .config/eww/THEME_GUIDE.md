@@ -31,25 +31,26 @@ themes/
 
 ### 查看当前主题
 ```bash
-./switch_theme.sh
+./scripts/switch_theme.sh
 ```
 
 ### 切换主题
 ```bash
 # 切换到Gruvbox Dark
-./switch_theme.sh gruvbox-dark
+./scripts/switch_theme.sh gruvbox-dark
 
 # 切换到Catppuccin Mocha
-./switch_theme.sh catppuccin-mocha
+./scripts/switch_theme.sh catppuccin-mocha
 ```
 
 ### 启动时指定主题
 ```bash
-# 启动Hyprland bar并应用指定主题
-./launch_hyprland.sh --theme catppuccin-mocha
+# 启动eww bar（自动检测窗口管理器）
+./launch_bar.sh
 
-# 启动Scroll bar并应用指定主题
-./launch_scroll.sh --theme gruvbox-dark
+# 先切换主题再启动
+./scripts/switch_theme.sh catppuccin-mocha
+./launch_bar.sh
 ```
 
 ## 🔧 创建新主题
@@ -69,7 +70,7 @@ cp themes/gruvbox-dark.scss themes/my-theme.scss
 
 ### 步骤3: 应用主题
 ```bash
-./switch_theme.sh my-theme
+./scripts/switch_theme.sh my-theme
 ```
 
 ## 🎨 主题设计原则
@@ -104,7 +105,7 @@ cp themes/gruvbox-dark.scss themes/my-theme.scss
 ### 主题未生效
 ```bash
 # 检查当前主题
-./switch_theme.sh
+./scripts/switch_theme.sh
 
 # 手动重新加载
 eww reload

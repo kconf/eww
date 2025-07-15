@@ -3,8 +3,8 @@
   `date +'{"year":"%Y","month":"%m","day":"%d","weekday":"%A","weekday_short":"%a","month_name":"%B","month_short":"%b","hour":"%H","minute":"%M","second":"%S","hour_12":"%I","ampm":"%p","timezone":"%Z","iso_date":"%Y-%m-%d","iso_datetime":"%Y-%m-%dT%H:%M:%S%z","timestamp":"%s"}'`)
 
 (defwidget time []
-  (eventbox :onhover `eww update calendar-show=true`
-            :onhoverlost `eww update calendar-show=false`
+  (eventbox :onhover "eww open calendar"
+            :onhoverlost "eww close calendar"
     (box :class "status-item time-item"
          :spacing 6
          (label :class "time-icon" :text "🕐")

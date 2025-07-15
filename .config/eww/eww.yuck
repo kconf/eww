@@ -85,7 +85,4 @@
   :stacking "overlay"
   :focusable false
   :windowtype "normal"
-  (revealer :reveal calendar-show
-            :transition "slidedown"
-            :duration "300ms"
-    (calendar-popup)))
+  (calendar-popup))
