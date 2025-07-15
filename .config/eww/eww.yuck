@@ -88,4 +88,4 @@
   (revealer :reveal calendar-show
             :transition "slidedown"
             :duration "300ms"
-    (time)))
+    (calendar-popup)))
