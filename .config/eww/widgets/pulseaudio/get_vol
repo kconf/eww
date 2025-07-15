@@ -14,7 +14,7 @@ get_volume_icon() {
     elif [ "$volume" -le 70 ]; then
         echo "🔊"
     else
-        echo "��"
+        echo "📢"
     fi
 }
 
