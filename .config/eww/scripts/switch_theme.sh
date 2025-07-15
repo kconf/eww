@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Theme switcher for eww configuration
 
-THEMES_DIR="$(dirname "$0")/themes"
-CONFIG_DIR="$(dirname "$0")"
+THEMES_DIR="$(dirname "$(dirname "$0")")/themes"
+CONFIG_DIR="$(dirname "$(dirname "$0")")"
 
 show_help() {
     echo "EWW Theme Switcher"
