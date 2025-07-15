@@ -11,16 +11,7 @@
          (label :class "time-text" :text "${time-poll.hour}:${time-poll.minute}"))))
 
 (defwidget calendar-popup []
-  (box :class "calendar-container"
-       :orientation "v"
-    (box :class "date-header"
-         :orientation "v"
-         :spacing 5
-      (label :class "date-title" 
-             :text "${time-poll.weekday}, ${time-poll.month_name} ${time-poll.day}, ${time-poll.year}")
-      (label :class "time-display"
-             :text "${time-poll.hour}:${time-poll.minute}"))
-    (calendar :class "calendar-widget")))
+  (calendar :class "calendar-widget"))
 
 ;; Additional date widgets that can use the rich JSON data
 
