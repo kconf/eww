@@ -26,7 +26,8 @@ else
         sleep 2
         get_active_window
     done
-fihyprland
+fi
+
 get_focused_window() {
     window_info=$(hyprctl activewindow -j 2>/dev/null)
     

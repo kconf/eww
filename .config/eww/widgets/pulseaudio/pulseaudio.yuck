@@ -1,5 +1,5 @@
-(defpoll volume-poll :interval "1s" 
-  :initial '{}'
+(defpoll volume-poll :interval "1s"
+  :initial '{"muted": false, "volume": 100, "icon": "🔊"}'
   "./widgets/pulseaudio/get_vol")
 
 (defwidget volume []
